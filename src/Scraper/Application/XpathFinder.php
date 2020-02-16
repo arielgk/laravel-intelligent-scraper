@@ -23,12 +23,12 @@ class XpathFinder
 
     public function __construct(GoutteClient $client, VariantGenerator $variantGenerator)
     {
-        $this->client           = $client;
+        $this->client = $client;
         $this->variantGenerator = $variantGenerator;
     }
 
     /**
-     * @param string          $url
+     * @param string $url
      * @param Configuration[] $configs
      *
      * @return array
@@ -53,16 +53,20 @@ class XpathFinder
                 }
             }
 
-            if (!$subcrawler->count()) {
+            if (!$subcrawler->count() && !$config['default']) {
                 $missingXpath = implode('\', \'', $config['xpaths']);
                 throw new MissingXpathValueException(
                     "Xpath '{$missingXpath}' for field '{$config['name']}' not found in '{$url}'."
                 );
-            }
 
-            $result['data'][$config['name']] = $subcrawler->each(function ($node) {
-                return $node->text();
-            });
+            } else if (!$subcrawler->count() && $config['default']) {
+                Log::debug("Xpath {$xpath} not found. Inserting default value: {$config['default']}.");
+                $result['data'][$config['name']] = $config['default'];
+            } else {
+                $result['data'][$config['name']] = $subcrawler->each(function ($node) {
+                    return $node->text();
+                });
+            }
         }
 
         Log::info('Calculating variant.');

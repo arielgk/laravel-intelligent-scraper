@@ -16,6 +16,7 @@ class CreateConfigurationsTable extends Migration
             $table->string('name')->primary();
             $table->string('type');
             $table->json('xpaths');
+            $table->string('default')->nullable();
             $table->timestamps();
         });
     }
