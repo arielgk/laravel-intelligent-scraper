@@ -63,8 +63,14 @@ class XpathFinder
                 Log::debug("Xpath {$xpath} not found. Inserting default value: {$config['default']}.");
                 $result['data'][$config['name']] = $config['default'];
             } else {
-                $result['data'][$config['name']] = $subcrawler->each(function ($node) {
-                    return $node->text();
+                $result['data'][$config['name']] = $subcrawler->each(function ($node) use ($config) {
+                    if ($config['html'] == true) {
+                        $domElement = $node->getNode(0); //important: get DOMDocument object from Crawler object
+                        return $domElement->ownerDocument->saveHTML($domElement);
+
+                    } else {
+                        return $node->text();
+                    }
                 });
             }
         }

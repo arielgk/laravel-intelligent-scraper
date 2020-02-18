@@ -37,6 +37,7 @@ class Configuration extends Model
         'type',
         'xpaths',
         'default',
+        'html',
     ];
 
     public function getXpathsAttribute($xpaths): array
